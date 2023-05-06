@@ -3,7 +3,6 @@ import app, { response } from '../main/app';
 import * as protoGen from '../main/generated/book';
 import proto = protoGen;
 import * as book from '../main/interfaces/Book'
-import * as queryAsk from '../main/queries'
 
 jest.setTimeout(20000);
 
