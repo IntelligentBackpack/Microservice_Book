@@ -8,7 +8,7 @@ const app: Express = express();
 app.use(bodyParser.json());
 
 app.get('/', async (req: Request, res: Response) => {
-  	res.send('Access control microservice');
+  	res.send('Books microservice');
 });
 
 import loginRouter from './routes/Create';
