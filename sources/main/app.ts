@@ -11,8 +11,8 @@ app.get('/', async (req: Request, res: Response) => {
   	res.send('Books microservice');
 });
 
-import loginRouter from './routes/Create';
-app.use('/login', loginRouter)
+import createRoute from './routes/Create';
+app.use('/create', createRoute)
 
 
 export = app;

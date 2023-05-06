@@ -7,6 +7,6 @@ import proto = protoGen.book
 
 //this route manage the login a user
 router.post('', async (req: {body: proto.Book}, res) => {
-
+    res.status(418).send()
 });
 
