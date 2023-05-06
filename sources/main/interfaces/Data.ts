@@ -1,7 +1,5 @@
 import * as protoGen from '../generated/book';
 import proto = protoGen.book;
-import * as utility from '../Utility'
-
 export interface Data {
     Day: number;
     Month: number;
@@ -44,4 +42,8 @@ export function verify_Basic_DataPresence(json: any): boolean {
 
 export function toString(data: Data): string {    
     return "ANNO: " + data.Year + " MESE: " + data.Month + " GIORNO: " + data.Day
+}
+
+export function exportDate(data: Data): string {    
+    return data.Year + "-" + data.Month + "-" + data.Day
 }

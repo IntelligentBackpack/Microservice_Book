@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package book;
+
+// package to use for generated java classses
+option java_package = "book.communication";
+
+// message, enum should be define in package level 
+option java_multiple_files = true;
+
+message AddBook {
+    string email_esecutore = 1;
+    Book Libro = 2; 
+}
+
+message Book {
+    int32 ISBN = 1;
+    string Titolo = 2;
+    string Autore = 3;
+    Data Data_Pubblicazione = 4;
+}
+
+message Data {
+    int32 Day = 1;
+    int32 Month = 2;
+    int32 Year = 3;
+}
+
+message MessageResponse {
+    string message = 1;
+}

@@ -1,10 +1,13 @@
 import request from 'supertest';
 import app, { response } from '../main/app';
 import * as protoGen from '../main/generated/book';
-import proto = protoGen;
+import proto = protoGen.book;
 import * as book from '../main/interfaces/Book'
+import * as data from '../main/interfaces/Data'
 
 jest.setTimeout(20000);
+
+var myBook: proto.Book = new proto.Book({ISBN: 0, Titolo: "Test book", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 6969, Month: 6, Day: 9})})
 
 describe("testing basic functionality", function() {
     it("should generate a default Book",  async() => {
@@ -37,5 +40,19 @@ describe("testing basic functionality", function() {
         expect(myBook.Data_Pubblicazione.Day).toBe(15)
         expect(myBook.Data_Pubblicazione.Month).toBe(1)
         expect(myBook.Data_Pubblicazione.Year).toBe(2015)
+    })
+})
+
+describe("create route functionality", function() {
+    it("should create a new book",async () => {
+        const serverResponse = await request(app).put('/create').send(myBook.toObject());
+        expect(serverResponse.statusCode).toBe(200)
+        expect(serverResponse.body.message).toBe("Booked added successfully.")
+    })
+
+    it("should give error 400 for book already present with ISBN", async() => {
+        const serverResponse = await request(app).put('/create').send(myBook.toObject());
+        expect(serverResponse.statusCode).toBe(400)
+        expect(serverResponse.body.message).toBe("Book already exists.")
     })
 })
