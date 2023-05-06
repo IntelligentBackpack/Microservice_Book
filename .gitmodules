@@ -1,0 +1,3 @@
+[submodule "BookCommunication"]
+	path = BookCommunication
+	url = https://github.com/IntelligentBackpack/BookCommunication.git
