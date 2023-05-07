@@ -1,6 +1,6 @@
 [submodule "BookCommunication"]
-	path = ./protoFiles/BookCommunication
+	path = BookCommunication
 	url = https://github.com/IntelligentBackpack/BookCommunication.git
 [submodule "AccessCommunication"]
-	path = ./protoFiles/AccessCommunication
+	path = AccessCommunication
 	url = https://github.com/IntelligentBackpack/AccessCommunication.git

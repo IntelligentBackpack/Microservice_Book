@@ -17,15 +17,17 @@ export function assignVals_JSON(json: any): Data {
         data = {Day: json.day, Month: json.month, Year: json.year};
     else if(json.hasOwnProperty("Month"))
         data = {Day: json.Day, Month: json.Month, Year: json.Year};
-        else
+        else {
             data = SQL_ToDate(json)
+        }
     return data;
 }
 
 export function SQL_ToDate(dt: string): Data {
     var data = defaultData();
 
-    let vals = dt.split('T')[0].split('-')
+    const calculatedDT: string = dt.split('T')[0]
+    let vals = calculatedDT.split("-")
     data.Year = +vals[0]
     data.Month = +vals[1]
     data.Day = +vals[2]
@@ -46,4 +48,8 @@ export function toString(data: Data): string {
 
 export function exportDate(data: Data): string {    
     return data.Year + "-" + data.Month + "-" + data.Day
+}
+
+export function isAssigned(data: Data): boolean {
+    return data.Year != -1 && data.Month != -1 && data.Day != -1
 }

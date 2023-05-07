@@ -35,3 +35,7 @@ export function verify_Basic_DataPresence(json: any): boolean {
 export function toString(book: Book): string {    
     return "ISBN: " + book.ISBN + " TITOLO: " + book.Titolo + " AUTORE: " + book.Autore + " DATA PUBBLICAZIONE: " + Data.toString(book.Data_Pubblicazione)
 }
+
+export function isAssigned(book: Book): boolean {
+    return book.ISBN != -1 && book.Titolo != "" && book.Autore != "" && Data.isAssigned(book.Data_Pubblicazione)
+}

@@ -27,6 +27,7 @@ jobs:
       uses: arduino/setup-protoc@v1
       with:
         version: '3.15.6'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Generate protoc compiled files
       run: npm i -g protoc-gen-ts

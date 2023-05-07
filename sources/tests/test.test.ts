@@ -5,9 +5,9 @@ import proto = protoGen.book;
 import * as book from '../main/interfaces/Book'
 import * as data from '../main/interfaces/Data'
 
-jest.setTimeout(20000);
+jest.setTimeout(5000);
 
-var myBook: proto.Book = new proto.Book({ISBN: 0, Titolo: "Test book", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 6969, Month: 6, Day: 9})})
+var myBook: proto.Book = new proto.Book({ISBN: randomIntFromInterval(-999999999, 999999999), Titolo: "Test book", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 6969, Month: 6, Day: 9})})
 
 describe("testing basic functionality", function() {
     it("should generate a default Book",  async() => {
@@ -45,14 +45,26 @@ describe("testing basic functionality", function() {
 
 describe("create route functionality", function() {
     it("should create a new book",async () => {
-        const serverResponse = await request(app).put('/create').send(myBook.toObject());
+        const serverResponse = await request(app).put('/create/book').send(new proto.AddBook({email_esecutore: "admin", Libro: myBook}).toObject());
         expect(serverResponse.statusCode).toBe(200)
         expect(serverResponse.body.message).toBe("Booked added successfully.")
     })
 
     it("should give error 400 for book already present with ISBN", async() => {
-        const serverResponse = await request(app).put('/create').send(myBook.toObject());
+        const serverResponse = await request(app).put('/create/book').send(new proto.AddBook({email_esecutore: "admin", Libro: myBook}).toObject());
         expect(serverResponse.statusCode).toBe(400)
         expect(serverResponse.body.message).toBe("Book already exists.")
     })
+
+    it("should give permission error when creating a book",async () => {
+        const serverResponse = await request(app).put('/create/book').send(new proto.AddBook({email_esecutore: "gesù", Libro: myBook}).toObject());
+        expect(serverResponse.statusCode).toBe(401)
+        expect(serverResponse.body.message).toBe("No privileges for adding a book.")
+    })
 })
+
+
+
+function randomIntFromInterval(min: number, max: number) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
