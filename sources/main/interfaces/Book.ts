@@ -3,7 +3,7 @@ import proto = protoGen.book;
 import * as Data from './Data';
 
 export interface Book {
-    ISBN: number;
+    ISBN: string;
     Titolo: string;
     Autore: string;
     Data_Pubblicazione: Data.Data;
@@ -11,7 +11,7 @@ export interface Book {
 
 export function defaultBook(): Book {
 
-    const book: Book = {ISBN: -1, Titolo: "", Autore: "", Data_Pubblicazione: Data.defaultData()};
+    const book: Book = {ISBN: "", Titolo: "", Autore: "", Data_Pubblicazione: Data.defaultData()};
     return book;
 }
 
@@ -37,5 +37,5 @@ export function toString(book: Book): string {
 }
 
 export function isAssigned(book: Book): boolean {
-    return book.ISBN != -1 && book.Titolo != "" && book.Autore != "" && Data.isAssigned(book.Data_Pubblicazione)
+    return book.ISBN != "" && book.Titolo != "" && book.Autore != "" && Data.isAssigned(book.Data_Pubblicazione)
 }
