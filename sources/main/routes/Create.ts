@@ -67,7 +67,7 @@ router.put('/buyBook', async (req: {body: proto.BuyBook}, res) => {
     }
     
     if(await queryAsk.buyBook(req.body.RFID, req.body.ISBN, libraryExists.ID)) {
-        res.status(200).send(new proto.BasicMessage({message: "RFID added successfully."}).toObject())
+        res.status(200).send(new proto.BasicMessage({message: "Copy added successfully."}).toObject())
         return;
     }
     res.status(500).send(new proto.BasicMessage({message: "Cannot add RFID."}).toObject())

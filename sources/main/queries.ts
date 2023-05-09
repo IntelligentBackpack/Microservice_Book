@@ -5,11 +5,11 @@ import * as Library from './interfaces/Library'
 import * as Copy from './interfaces/Copy';
 
 const conf: config = {
-    user: 'CloudSA665ece82', // better stored in an app setting such as process.env.DB_USER
-    password: 'unibo99@23MLABDL', // better stored in an app setting such as process.env.DB_PASSWORD
-    server: 'smartbaguniboserver.database.windows.net', // better stored in an app setting such as process.env.DB_SERVER
+    user: 'intelligentSystem', // better stored in an app setting such as process.env.DB_USER
+    password: 'LSS#2022', // better stored in an app setting such as process.env.DB_PASSWORD
+    server: 'intelligent-system.database.windows.net', // better stored in an app setting such as process.env.DB_SERVER
     port: 1433, // optional, defaults to 1433, better stored in an app setting such as process.env.DB_PORT
-    database: 'smartbagDB', // better stored in an app setting such as process.env.DB_NAME
+    database: 'IntelligentBackpack', // better stored in an app setting such as process.env.DB_NAME
     options: {
         encrypt: true
     }
@@ -21,7 +21,7 @@ export async function getBookInfo(ISBN: string): Promise<book.Book> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet:sql.IResult<any> = await poolConnection.request()
-                                        .query("select * from Libro where ISBN=" + ISBN); //execute the query
+                                        .query("select * from Libro where ISBN='" + ISBN + "'"); //execute the query
         poolConnection.close(); //close connection with database
         if(resultSet.rowsAffected[0] == 0)
             return myBook;
@@ -30,6 +30,7 @@ export async function getBookInfo(ISBN: string): Promise<book.Book> {
             row.Data_Pubblicazione = new Date(row.Data_Pubblicazione).toISOString()
             myBook = book.assignVals_JSON(row)
         });
+        return myBook;
     } catch (e: any) {
         console.error(e);
     }

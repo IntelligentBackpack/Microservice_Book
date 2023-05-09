@@ -10,7 +10,6 @@ export interface Book {
 }
 
 export function defaultBook(): Book {
-
     const book: Book = {ISBN: "", Titolo: "", Autore: "", Data_Pubblicazione: Data.defaultData()};
     return book;
 }
