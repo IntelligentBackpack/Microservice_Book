@@ -16,9 +16,7 @@ router.get('/getBook', async (req, res) => {
         res.status(400).send(new proto.BasicMessage({message: "Require ISBN value."}));
         return;
     }
-    const resQ: Book.Book = await queryAsk.getBookInfo(req.query.ISBN.toString())
-    const gen: proto.Book = Book.generate_protoBook(resQ) 
-    res.status(200).send(gen.toObject())
+    res.status(200).send(Book.generate_protoBook(await queryAsk.getBookInfo(req.query.ISBN.toString())).toObject())
 });
 
 

@@ -51,17 +51,11 @@ export async function addBook(myBook: book.Book): Promise<boolean> {
     return false;
 }
 
-//TODO TESTARE
 export async function registerLibrary(Email: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
-        var resultSet:sql.IResult<any> = await poolConnection.request()
-                                        .query("select count(ID) from Libreria"); //execute the query
-
-        const numberOfElements = resultSet.rowsAffected[0] //get the number of elements
-
         var resultSet2:sql.IResult<any> = await poolConnection.request()
-                                        .query("Insert into Libreria values (" + numberOfElements + ",'" + Email +"')"); //execute the query
+                                        .query("Insert into Libreria values ('" + Email +"')"); //execute the query
         poolConnection.close(); //close connection with database
         // ouput row contents from default record set
         return resultSet2.rowsAffected[0] == 1;
@@ -71,7 +65,6 @@ export async function registerLibrary(Email: string): Promise<boolean> {
     return false;
 }
 
-//TODO TESTARE
 export async function getLibreriaByEmail(email: string): Promise<Library.Library> {
     let myLibrary = Library.defaultLibrary()
     try {
@@ -92,12 +85,11 @@ export async function getLibreriaByEmail(email: string): Promise<Library.Library
     return myLibrary;
 }
 
-//TODO TESTARE
 export async function verifyRFIDExists(RFID: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet2:sql.IResult<any> = await poolConnection.request()
-                                        .query("Select into Copia where RFID = ' " + RFID + "'"); //execute the query
+                                        .query("Select * from Copia where RFID = '" + RFID + "'"); //execute the query
         poolConnection.close(); //close connection with database
         // ouput row contents from default record set
         return resultSet2.rowsAffected[0] == 1;
@@ -107,7 +99,6 @@ export async function verifyRFIDExists(RFID: string): Promise<boolean> {
     return false;
 }
 
-//TODO TESTARE
 export async function buyBook(RFID: string, ISBN: string, ID_libreria: number): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
