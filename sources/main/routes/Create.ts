@@ -3,6 +3,7 @@ import * as queryAsk from '../queries'
 import axios from 'axios'
 const router = Router();
 export default router;
+import request from 'supertest';
 
 import * as protoGen from '../generated/book'
 import * as protoGen2 from '../generated/access'
@@ -15,13 +16,8 @@ const AccessMicroserviceURL:string = "https://accessmicroservice.azurewebsites.n
 
 
 router.put('/book', async (req: {body: proto.BookActions_WithPermission}, res) => {
-    var err:boolean = false;
-
-    await axios.get(AccessMicroserviceURL+"/utility/verifyPrivileges_HIGH?email=" + req.body.email_esecutore).then(function (response) {
-        err = (response.status != 200);
-    })
-
-    if(err) {
+    const serverResponse = await request(AccessMicroserviceURL).get('/utility/verifyPrivileges_HIGH').query({ email: req.body.email_esecutore });
+    if(serverResponse.statusCode != 200) {
         res.status(401).send(new proto.BasicMessage({message: "No privileges for adding a book."}).toObject())
         return;
     }

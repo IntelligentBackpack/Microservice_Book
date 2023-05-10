@@ -103,7 +103,7 @@ export async function buyBook(RFID: string, ISBN: string, ID_libreria: number): 
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet:sql.IResult<any> = await poolConnection.request()
-                                        .query("Insert into Copia values ('" + RFID + "'," + ISBN  + ", " + ID_libreria + ")"); //execute the query
+                                        .query("Insert into Copia values ('" + RFID + "','" + ISBN  + "', " + ID_libreria + ")"); //execute the query
         poolConnection.close(); //close connection with database
         // ouput row contents from default record set
         return resultSet.rowsAffected[0] == 1;
@@ -113,15 +113,13 @@ export async function buyBook(RFID: string, ISBN: string, ID_libreria: number): 
     return false;
 }
 
-//TODO TESTARE
 export async function getCopyByEmail(Email: string): Promise<Copy.Copy> {
     let copia = Copy.defaultCopy();
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet:sql.IResult<any> = await poolConnection.request()
-                                        .query("select * from Libreria, Copia where Copia.ID_Libreria=Libreria.ID AND Libreria.Email='" + Email + "'"); //execute the query
+                                        .query("select * from Libreria, Copia where Copia.ID_Libreria=Libreria.ID AND Libreria.Email_Proprietario='" + Email + "'"); //execute the query
         poolConnection.close(); //close connection with database
-
         if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
             return copia;
         // ouput row contents from default record set
@@ -134,16 +132,12 @@ export async function getCopyByEmail(Email: string): Promise<Copy.Copy> {
     return copia;
 }
 
-//TODO TESTARE
 export async function deleteLibraryByEmail(Email_Proprietario: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet:sql.IResult<any> = await poolConnection.request()
                                         .query("delete from Libreria where Email_Proprietario='"+ Email_Proprietario + "'"); //execute the query
         poolConnection.close(); //close connection with database
-
-        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
-            return false;
         // ouput row contents from default record set
         return true;
         } catch (e: any) {
@@ -152,7 +146,6 @@ export async function deleteLibraryByEmail(Email_Proprietario: string): Promise<
     return false;
 }
 
-//TODO TESTARE
 export async function deleteRFID(RFID: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
@@ -160,8 +153,6 @@ export async function deleteRFID(RFID: string): Promise<boolean> {
                                         .query("delete from Copia where RFID='"+ RFID + "'"); //execute the query
         poolConnection.close(); //close connection with database
 
-        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
-            return false;
         // ouput row contents from default record set
         return true;
         } catch (e: any) {
@@ -170,17 +161,13 @@ export async function deleteRFID(RFID: string): Promise<boolean> {
     return false;
 }
 
-//TODO TESTARE
 export async function deleteRFID_Email(Email_Proprietario: string): Promise<boolean> {
+    var libreriaID = await getLibreriaByEmail(Email_Proprietario)
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
-        let libreriaID = (await getLibreriaByEmail(Email_Proprietario)).ID
         var resultSet:sql.IResult<any> = await poolConnection.request()
-                                        .query("delete from Copia where Id_Libreria="+ libreriaID); //execute the query
+                                        .query("delete from Copia where Id_Libreria="+ libreriaID.ID); //execute the query
         poolConnection.close(); //close connection with database
-
-        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
-            return false;
         // ouput row contents from default record set
         return true;
         } catch (e: any) {
@@ -189,16 +176,26 @@ export async function deleteRFID_Email(Email_Proprietario: string): Promise<bool
     return false;
 }
 
-//TODO TESTARE
+export async function verify_ISBN_usedInCopy(ISBN: string): Promise<boolean> {
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        var resultSet:sql.IResult<any> = await poolConnection.request()
+                                        .query("select * from Copia, Libro where Copia.ISBN = Libro.ISBN AND Libro.ISBN = '" + ISBN + "'"); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        return resultSet.rowsAffected[0] > 0;
+        } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
 export async function deleteBook_ISBN(ISBN: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
         var resultSet:sql.IResult<any> = await poolConnection.request()
                                         .query("delete from Libro where ISBN='"+ ISBN + "'"); //execute the query
         poolConnection.close(); //close connection with database
-
-        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
-            return false;
         // ouput row contents from default record set
         return true;
         } catch (e: any) {
@@ -207,7 +204,20 @@ export async function deleteBook_ISBN(ISBN: string): Promise<boolean> {
     return false;
 }
 
-//TODO TESTARE
+export async function verify_AuthorBook_usedInCopy(Author: string): Promise<boolean> {
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        var resultSet:sql.IResult<any> = await poolConnection.request()
+                                        .query("select * from Copia, Libro where Copia.ISBN = Libro.ISBN AND Libro.Autore = '" + Author + "'"); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        return resultSet.rowsAffected[0] > 0;
+        } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
 export async function deleteBook_Author(Author: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
@@ -215,9 +225,6 @@ export async function deleteBook_Author(Author: string): Promise<boolean> {
                                         .query("delete from Libro where Autore='"+ Author + "'"); //execute the query
         poolConnection.close(); //close connection with database
 
-        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
-            return false;
-        // ouput row contents from default record set
         return true;
         } catch (e: any) {
         console.error(e);
