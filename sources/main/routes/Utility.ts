@@ -20,3 +20,10 @@ router.get('/getBook', async (req, res) => {
 });
 
 
+router.post('/changeEmail', async (req: {body: proto.BasicMessage}, res) => {
+    if(await queryAsk.changeEmail(req.body.message, req.body.message2)) {
+        res.status(200).send(new proto.BasicMessage({message: "Email changed successfully."}).toObject())
+        return;
+    }
+    res.status(500).send(new proto.BasicMessage({message: "Cannot add book."}).toObject())
+});

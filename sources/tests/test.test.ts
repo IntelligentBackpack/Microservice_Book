@@ -3,9 +3,8 @@ import app, { response } from '../main/app';
 import * as protoGen from '../main/generated/book';
 import proto = protoGen.book;
 import * as Book from '../main/interfaces/Book'
-import * as data from '../main/interfaces/Data'
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 var myBook: proto.Book = new proto.Book({ISBN: randomISBN(), Titolo: "Test book", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 6969, Month: 6, Day: 9})})
 var myLibrary: proto.BasicMessage = new proto.BasicMessage({message: "admin"})
@@ -185,25 +184,104 @@ describe("remove route functionality", function() {
 
 
 
-describe.skip("testing utility functionality", function() {
+describe("testing utility functionality", function() {
+    const myBook2 = new proto.Book({ISBN: randomISBN(), Titolo: "Test book 2", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 3845, Month: 12, Day: 5})})
+    const myRFID: string[] = ["yesIm_A_ValidRFID123", "yesIm_A_newValidRFID"]
+    
+    it("create 2 books, 2 RFID and 1 library",async () => {
+        await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook}).toObject());
+        await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook2}).toObject());
+        
+        await request(app).put('/create/library').send(myLibrary.toObject())
+
+        await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook.ISBN, RFID: "yesIm_A_ValidRFID123", emailCompratore: "admin"}).toObject()));
+        await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook2.ISBN, RFID: "yesIm_A_newValidRFID", emailCompratore: "admin"}).toObject()));
+    
+        expect(1).toBe(1)
+    })
+
     describe("testing getBook", function() {
         it("should get a default book" ,async () => {
-            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: "test"})
+            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: randomISBN()})
             expect(serverResponse.statusCode).toBe(200)
             expect(Book.isAssigned(serverResponse.body)).toBe(false)
         })
     
         it("should get the specified book" ,async () => {
-            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: "123456789ABCD"})
+            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: myBook2.ISBN})
             expect(serverResponse.statusCode).toBe(200)
             expect(Book.isAssigned(serverResponse.body)).toBe(true)
-            expect(serverResponse.body.ISBN).toBe("123456789ABCD")
-            expect(serverResponse.body.Titolo).toBe("Il libro inserito a mano")
-            expect(serverResponse.body.Autore).toBe("Il creatore del microservizio")
-            expect(serverResponse.body.Data_Pubblicazione.Day).toBe(5)
-            expect(serverResponse.body.Data_Pubblicazione.Month).toBe(1)
-            expect(serverResponse.body.Data_Pubblicazione.Year).toBe(2016)
+            expect(serverResponse.body.ISBN).toBe(myBook2.ISBN)
+            expect(serverResponse.body.Titolo).toBe(myBook2.Titolo)
+            expect(serverResponse.body.Autore).toBe(myBook2.Autore)
+            expect(serverResponse.body.Data_Pubblicazione.Day).toBe(myBook2.Data_Pubblicazione.Day)
+            expect(serverResponse.body.Data_Pubblicazione.Month).toBe(myBook2.Data_Pubblicazione.Month)
+            expect(serverResponse.body.Data_Pubblicazione.Year).toBe(myBook2.Data_Pubblicazione.Year)
         })
+    })
+
+    describe("testing adding copy to backpack", function() {
+        it("should give error for no RFID passed",async () => {
+            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({}).toObject())
+            expect(serverResponse.statusCode).toBe(400)
+            expect(serverResponse.body.message).toBe("You need to add at least 1 copy.")
+        })
+        it("should give error for no library associated with email",async () => {
+            const myRFID: string[] = ["gesù"]
+            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({RFID: myRFID}).toObject())
+            expect(serverResponse.statusCode).toBe(400)
+            expect(serverResponse.body.message).toBe("No library associated with passed email.")
+        })
+        it("should give error for RFID not existing",async () => {
+            const myRFID: string[] = ["csdceef"]
+            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({email: "admin",RFID: myRFID}).toObject())
+            expect(serverResponse.statusCode).toBe(400)
+            expect(serverResponse.body.message).toBe("The RFID passed does not exists.")
+        })
+        it("should add the RFIDs specified to the backpack",async () => {
+
+            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({email: "admin",RFID: myRFID}).toObject())
+            expect(serverResponse.statusCode).toBe(200)
+            expect(serverResponse.body.message).toBe("RFIDs added successfully.")
+        })
+    })
+
+    describe("testing utility methods of backpack", function() {
+        it("should get all RFIDs in backpack using email",async () => {
+            const serverResponse = await request(app).get('/backpack/getCopiesRFID').send(new proto.BasicMessage({message: "admin"}).toObject())
+            expect(serverResponse.statusCode).toBe(200)
+            expect(serverResponse.body.RFID.length).toBe(2)
+        })
+        it("should get all RFIDs in backpack using email",async () => {
+            const serverResponse = await request(app).get('/backpack/getBooksISBN').send(new proto.BasicMessage({message: "admin"}).toObject())
+            expect(serverResponse.statusCode).toBe(200)
+            expect(serverResponse.body.RFID.length).toBe(2)
+        })
+    })
+
+    describe("testing remove backpack copies", function() {
+        it("should give error for no RFID assed",async () => {
+            const serverResponse = await request(app).delete('/backpack/removeCopies').send(new proto.multipleRFID({}).toObject())
+            expect(serverResponse.statusCode).toBe(400)
+            expect(serverResponse.body.message).toBe("You need to remove at least 1 copy.")
+        })
+        it("should remove the specified RFID",async () => {
+            const serverResponse = await request(app).delete('/backpack/removeCopies').send(new proto.multipleRFID({RFID: ["yesIm_A_ValidRFID123"]}).toObject())
+            expect(serverResponse.statusCode).toBe(200)
+            expect(serverResponse.body.message).toBe("RFIDs removed successfully.")
+        })
+        it("should clear the backpack of a specified user passed by email",async () => {
+            const serverResponse = await request(app).delete('/backpack/clear').send(new proto.BasicMessage({message: "admin"}).toObject())
+            expect(serverResponse.statusCode).toBe(200)
+            expect(serverResponse.body.message).toBe("RFIDs removed successfully.")
+        })
+    })
+
+    it("Clean the data created",async () => {
+        await request(app).delete('/remove/RFID/all').send(new proto.BasicMessage({message: "admin"}).toObject());
+        await request(app).delete('/remove/book/Autore').send(new proto.BasicMessage({message: "admin", message2: "Test Autore"}).toObject());
+        await request(app).delete('/remove/libreria').send(new proto.BasicMessage({message: "admin"}).toObject());
+        expect(1).toBe(1)
     })
 })
 
@@ -220,5 +298,16 @@ function randomISBN(): string {
         str += randomIntFromInterval(1000, 9999) + "-"
     }
     str += randomIntFromInterval(10, 99).toString()
+    return str;
+}
+function randomRFID(): string {
+    const characters = '0123456789ABCDEF';
+    var str: string = ""
+    for (let index = 0; index < 7; index++) {
+        str += characters.charAt(Math.floor(Math.random() * characters.length));
+        str += characters.charAt(Math.floor(Math.random() * characters.length));
+        str += ":"
+    }
+    str = str.substring(0, str.length - 1)
     return str;
 }
