@@ -1,19 +1,20 @@
 {
   "name": "microservice_book",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "mkdirp ./sources/main/generated && protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && npx tsc",
+    "build": "mkdirp ./sources/main/generated && protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./AccessCommunication ./AccessCommunication/*.proto && npx tsc",
     "start": "node sources/build/main/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q sources/build/main/index.js\"",
-    "test": "protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && jest",
-    "coverage": "protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && jest --coverage"
+    "test": "protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./AccessCommunication ./AccessCommunication/*.proto && jest",
+    "coverage": "protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./BookCommunication ./BookCommunication/*.proto && protoc --ts_opt=esModuleInterop=true --ts_out=./sources/main/generated -I ./AccessCommunication ./AccessCommunication/*.proto && jest --coverage"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/google-protobuf": "^3.15.6",
+    "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "google-protobuf": "^3.21.2",

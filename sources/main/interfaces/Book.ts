@@ -3,15 +3,14 @@ import proto = protoGen.book;
 import * as Data from './Data';
 
 export interface Book {
-    ISBN: number;
+    ISBN: string;
     Titolo: string;
     Autore: string;
     Data_Pubblicazione: Data.Data;
 }
 
 export function defaultBook(): Book {
-
-    const book: Book = {ISBN: -1, Titolo: "", Autore: "", Data_Pubblicazione: Data.defaultData()};
+    const book: Book = {ISBN: "", Titolo: "", Autore: "", Data_Pubblicazione: Data.defaultData()};
     return book;
 }
 
@@ -34,4 +33,8 @@ export function verify_Basic_DataPresence(json: any): boolean {
 
 export function toString(book: Book): string {    
     return "ISBN: " + book.ISBN + " TITOLO: " + book.Titolo + " AUTORE: " + book.Autore + " DATA PUBBLICAZIONE: " + Data.toString(book.Data_Pubblicazione)
+}
+
+export function isAssigned(book: Book): boolean {
+    return book.ISBN != "" && book.Titolo != "" && book.Autore != "" && Data.isAssigned(book.Data_Pubblicazione)
 }

@@ -13,6 +13,10 @@ app.get('/', async (req: Request, res: Response) => {
 
 import createRoute from './routes/Create';
 app.use('/create', createRoute)
+import utilityRoute from './routes/Utility';
+app.use('/utility', utilityRoute)
+import removeRoute from './routes/Remove';
+app.use('/remove', removeRoute)
 
 
 export = app;
