@@ -132,6 +132,25 @@ export async function getCopyByEmail(Email: string): Promise<Copy.Copy> {
     return copia;
 }
 
+export async function getCopyByRFID(RFID: string): Promise<Copy.Copy> {
+    let copia = Copy.defaultCopy();
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        var resultSet:sql.IResult<any> = await poolConnection.request()
+                                        .query("select * from Copia where RFID = '" + RFID + "'"); //execute the query
+        poolConnection.close(); //close connection with database
+        if(resultSet.rowsAffected[0] == 0) //se non è stata trovata nessuna libreria, torna quella default
+            return copia;
+        // ouput row contents from default record set
+        resultSet.recordset.forEach(function(row: any) {
+            copia = Copy.assignVals_JSON(row)
+        });
+        } catch (e: any) {
+        console.error(e);
+    }
+    return copia;
+}
+
 export async function deleteLibraryByEmail(Email_Proprietario: string): Promise<boolean> {
     try {
         var poolConnection = await sql.connect(conf); //connect to the database
@@ -230,4 +249,97 @@ export async function deleteBook_Author(Author: string): Promise<boolean> {
         console.error(e);
     }
     return false;
+}
+
+
+
+export async function changeEmail(newEmail: string, oldEmail:string): Promise<boolean> {
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        var resultSet:sql.IResult<any> = await poolConnection.request()
+                                        .query("update Libreria set Email_Proprietario ='" + newEmail + "' where Email_Proprietario ='" + oldEmail + "'"); //execute the query
+        poolConnection.close(); //close connection with database
+
+        return true;
+        } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
+export async function addCopyToBackpack(RFID: string, ID_Libreria: number): Promise<boolean> {
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        var resultSet:sql.IResult<any> = await poolConnection.request()
+                                        .query("Insert into Backpack values ('" + RFID + "', " + ID_Libreria + ")"); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        return resultSet.rowsAffected[0] == 1;
+    } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
+export async function removeCopyfromBackpack(RFID: string): Promise<boolean> {
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        await poolConnection.request().query("delete from Backpack where RFID='" + RFID + "'"); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        return true;
+    } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
+export async function removeAllCopyfromBackpackByEmail(email: string): Promise<boolean> {
+    const library: Library.Library = await getLibreriaByEmail(email)
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        await poolConnection.request().query("delete from Backpack where ID_Libreria="+ library.ID); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        return true;
+    } catch (e: any) {
+        console.error(e);
+    }
+    return false;
+}
+
+export async function getBackpackRFIDsByEmail(email: string): Promise<string[]> {
+    const library: Library.Library = await getLibreriaByEmail(email)
+    var RFIDS: string[] = []
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        const resultSet = await poolConnection.request().query("select * from Backpack where ID_Libreria=" + library.ID); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        resultSet.recordset.forEach(function(row: any) {
+            RFIDS.push(row.RFID)
+        });
+        return RFIDS;
+    } catch (e: any) {
+        console.error(e);
+    }
+    return ["-1"];
+}
+
+export async function getBackpackISBNByEmail(email: string): Promise<string[]> {
+    const library: Library.Library = await getLibreriaByEmail(email)
+    var ISBN: string[] = []
+    try {
+        var poolConnection = await sql.connect(conf); //connect to the database
+        const resultSet = await poolConnection.request().query("select Copia.ISBN from Backpack, Copia where Backpack.ID_Libreria=" + library.ID + " AND Backpack.RFID = Copia.RFID"); //execute the query
+        poolConnection.close(); //close connection with database
+        // ouput row contents from default record set
+        resultSet.recordset.forEach(function(row: any) {
+            ISBN.push(row.ISBN)
+        });
+        return ISBN;
+    } catch (e: any) {
+        console.error(e);
+    }
+    return ["-1"];
 }

@@ -62,7 +62,6 @@ router.delete('/book/ISBN', async (req: {body: proto.BookActions_WithPermission}
     res.status(500).send(new proto.BasicMessage({message: "Cannot remove book."}).toObject())
 });
 
-//TODO TESTARE
 router.delete('/book/Autore', async (req: {body: proto.BasicMessage}, res) => {
     const serverResponse = await request(AccessMicroserviceURL).get('/utility/verifyPrivileges_HIGH').query({ email: req.body.message });
     if(serverResponse.statusCode != 200) {
