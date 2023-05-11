@@ -202,21 +202,21 @@ describe("testing utility functionality", function() {
 
     describe("testing getBook", function() {
         it("should get a default book" ,async () => {
-            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: "test"})
+            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: randomISBN()})
             expect(serverResponse.statusCode).toBe(200)
             expect(Book.isAssigned(serverResponse.body)).toBe(false)
         })
     
         it("should get the specified book" ,async () => {
-            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: "123456789ABCD"})
+            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: myBook2.ISBN})
             expect(serverResponse.statusCode).toBe(200)
             expect(Book.isAssigned(serverResponse.body)).toBe(true)
-            expect(serverResponse.body.ISBN).toBe("123456789ABCD")
-            expect(serverResponse.body.Titolo).toBe("Il libro inserito a mano")
-            expect(serverResponse.body.Autore).toBe("Il creatore del microservizio")
-            expect(serverResponse.body.Data_Pubblicazione.Day).toBe(5)
-            expect(serverResponse.body.Data_Pubblicazione.Month).toBe(1)
-            expect(serverResponse.body.Data_Pubblicazione.Year).toBe(2016)
+            expect(serverResponse.body.ISBN).toBe(myBook2.ISBN)
+            expect(serverResponse.body.Titolo).toBe(myBook2.Titolo)
+            expect(serverResponse.body.Autore).toBe(myBook2.Autore)
+            expect(serverResponse.body.Data_Pubblicazione.Day).toBe(myBook2.Data_Pubblicazione.Day)
+            expect(serverResponse.body.Data_Pubblicazione.Month).toBe(myBook2.Data_Pubblicazione.Month)
+            expect(serverResponse.body.Data_Pubblicazione.Year).toBe(myBook2.Data_Pubblicazione.Year)
         })
     })
 
