@@ -1,0 +1,1400 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Book microservice",
+    "description": "This microservice is used to access informations about books. In particular, this microservice expose API with functionality that let you add new books, add a personal library and let you register RFIDs associated to a defined book.",
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "GitHub page",
+    "url": "https://github.com/IntelligentBackpack/Microservice_Book"
+  },
+  "servers": [
+    {
+      "url": "https://bookmicroservice.azurewebsites.net"
+    }
+  ],
+  "tags": [
+    {
+      "name": "create",
+      "description": "Let you create a specified object"
+    },
+    {
+      "name": "utility",
+      "description": "Let you get/change some informations"
+    },
+    {
+      "name": "remove",
+      "description": "Let you delete data"
+    },
+    {
+      "name": "backpack",
+      "description": "Let you handle all the informations inside your backpack"
+    }
+  ],
+  "paths": {
+    "/create/book": {
+      "put": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Create a new book",
+        "description": "Create a new book, using the values passed.",
+        "requestBody": {
+          "description": "Create a new book in the system",
+          "content": {
+            "application/protobuf.BookActions_WithPermission": {
+              "schema": {
+                "$ref": "#/components/schemas/BookActions_WithPermission"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "email_esecutore": "string",
+                    "Libro": {
+                      "ISBN": "string",
+                      "Titolo?": "string",
+                      "Autore?": "string",
+                      "Data_Pubblicazione?": {
+                        "Day": "integer",
+                        "Month": "integer",
+                        "Year": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Booked added successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Booked added successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Book already exists <br>ISBN have to be 17 characters long.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Book already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No privileges for adding a book.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "No privileges for adding a book."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot add book.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot add book"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create/library": {
+      "put": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Create a new library",
+        "description": "Create a library associated with an email of a user",
+        "requestBody": {
+          "description": "Create a new library in the system",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email."
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Libreria created successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Libreria created successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There is already a library associated to that email.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "There is already a library associated to that email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "There are no email existing as the one you specified.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "There are no email existing as the one you specified."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot add the library.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot add the library."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create/buyBook": {
+      "put": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Create a RFID",
+        "description": "Create a RFID associated to an ISBN and the library of the user",
+        "requestBody": {
+          "description": "Create a new RFID in the system",
+          "content": {
+            "application/protobuf.BuyBook": {
+              "schema": {
+                "$ref": "#/components/schemas/BuyBook"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "ISBN": "string",
+                    "RFID": "string",
+                    "emailCompratore": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Copy added successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot add the library."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There isn't any book associated with the specified ISBN. <br>There isn't any library associated with the specified email. <br>RFID have to have a length of 20. <br>RFID already exists.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "No book",
+                    "value": {
+                      "message": "There isn't any book associated with the specified ISBN."
+                    }
+                  },
+                  "messageReturn2": {
+                    "summary": "No library",
+                    "value": {
+                      "message": "There isn't any library associated with the specified email."
+                    }
+                  },
+                  "messageReturn3": {
+                    "summary": "RFID length",
+                    "value": {
+                      "message": "RFID have to have a length of 20."
+                    }
+                  },
+                  "messageReturn4": {
+                    "summary": "RFID exists",
+                    "value": {
+                      "message": "RFID already exists."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot add RFID.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot add RFID."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/utility/getBook": {
+      "get": {
+        "tags": [
+          "utility"
+        ],
+        "summary": "Get the informations of a book",
+        "description": "Get the informations of a specified book with given ISBN",
+        "parameters": [
+          {
+            "name": "ISBN",
+            "in": "query",
+            "description": "ISBN of the book you are looking for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got the informations from the database.",
+            "content": {
+              "application/protobuf.Book": {
+                "schema": {
+                  "$ref": "#/components/schemas/Book"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "ISBN": "string",
+                      "Titolo": "string",
+                      "Autore": "string",
+                      "Data_Pubblicazione": {
+                        "Day": "integer",
+                        "Month": "integer",
+                        "Year": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Require ISBN value.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Require ISBN value."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/utility/changeEmail": {
+      "post": {
+        "tags": [
+          "utility"
+        ],
+        "summary": "Change email in the library.",
+        "description": "Change the email of a library. <br>IMPORTANT-> Never use this functionality for changing the email. Use the one from the Access microservice",
+        "requestBody": {
+          "description": "Change the email in the library",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Email changed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Email changed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot change the email.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot change the email."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/remove/libreria": {
+      "delete": {
+        "tags": [
+          "remove"
+        ],
+        "summary": "Remove a library",
+        "description": "Remove a specified library from the system",
+        "requestBody": {
+          "description": "Remove the library given a specified email",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Library removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Library removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There are some books still assigned to this library. Remove them before.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "There are some books still assigned to this library. Remove them before."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot remove library.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot remove library."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/remove/RFID/single": {
+      "delete": {
+        "tags": [
+          "remove"
+        ],
+        "summary": "Remove a RFID",
+        "description": "Remove a specified RFID from the system",
+        "requestBody": {
+          "description": "Remove the RFID given",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "RFID"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RFID removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "RFID removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot remove RFID.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot remove RFID."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/remove/RFID/all": {
+      "delete": {
+        "tags": [
+          "remove"
+        ],
+        "summary": "Remove all RFID of a library",
+        "description": "Remove all the registered RFID associated with a given email",
+        "requestBody": {
+          "description": "Remove all RFID of an email",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RFIDs removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "RFIDs removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot remove RFIDs.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot remove RFIDs."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/remove/book/ISBN": {
+      "delete": {
+        "tags": [
+          "remove"
+        ],
+        "summary": "Remove a book from the system",
+        "description": "Remove a book, specified by ISBN, from the system",
+        "requestBody": {
+          "description": "Remove a book",
+          "content": {
+            "application/protobuf.BookActions_WithPermission": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "email_esecutore": "string",
+                    "Libro": {
+                      "ISBN": "string",
+                      "Titolo?": "string",
+                      "Autore?": "string",
+                      "Data_Pubblicazione?": {
+                        "Day": "integer",
+                        "Month": "integer",
+                        "Year": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Book removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Book removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The book is register to 1+ RFIDs.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "The book is register to 1+ RFIDs."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No privileges for deleting a book.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "No privileges for deleting a book."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot remove book.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot remove book."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/remove/book/Autore": {
+      "delete": {
+        "tags": [
+          "remove"
+        ],
+        "summary": "Remove all books of an author",
+        "description": "Remove all books, specified by author parameter, from the system",
+        "requestBody": {
+          "description": "Remove all books of an author",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Books removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Books removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cannot delete all books. 1+ books are associated with 1+ RFIDs.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot delete all books. 1+ books are associated with 1+ RFIDs."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No privileges for deleting books.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "No privileges for deleting books."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Cannot remove books.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Cannot remove books."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backpack/addCopies": {
+      "put": {
+        "tags": [
+          "backpack"
+        ],
+        "summary": "Add 1+ copies to the backpack inventory",
+        "description": "Add 1+ copies passed to the inventory of the backpack",
+        "requestBody": {
+          "description": "Add 1+ copies to the backpack inventory",
+          "content": {
+            "application/protobuf.multipleRFID": {
+              "schema": {
+                "$ref": "#/components/schemas/multipleRFID"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message?": "email",
+                    "RFID": "string[]"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RFIDs added successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "RFIDs added successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "You need to add at least 1 copy <br> No library associated with passed email <br> The RFID passed does not exists.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "No data passed",
+                    "value": {
+                      "message": "You need to add at least 1 copy"
+                    }
+                  },
+                  "messageReturn2": {
+                    "summary": "No library",
+                    "value": {
+                      "message": "No library associated with passed email"
+                    }
+                  },
+                  "messageReturn3": {
+                    "summary": "Invalid RFID",
+                    "value": {
+                      "message": "The RFID passed does not exists."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong while adding the copy to backpack.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Something went wrong while adding the copy to backpack."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backpack/removeCopies": {
+      "delete": {
+        "tags": [
+          "backpack"
+        ],
+        "summary": "Remove 1+ copies to the backpack inventory",
+        "description": "Remove 1+ copies passed to the inventory of the backpack",
+        "requestBody": {
+          "description": "Remove 1+ copies to the backpack inventory",
+          "content": {
+            "application/protobuf.multipleRFID": {
+              "schema": {
+                "$ref": "#/components/schemas/multipleRFID"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message?": "email",
+                    "RFID": "string[]"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RFIDs removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "RFIDs removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "You need to remove at least 1 copy.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "You need to remove at least 1 copy."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong while removing a copy to backpack.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Something went wrong while removing a copy to backpack."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backpack/clear": {
+      "delete": {
+        "tags": [
+          "backpack"
+        ],
+        "summary": "Clear the backpack inventory",
+        "description": "Clear the backpack inventory of a given user, passed by email",
+        "requestBody": {
+          "description": "Clear the inventory of a user",
+          "content": {
+            "application/protobuf.BasicMessage": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RFIDs removed successfully.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "RFIDs removed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong while removing the copies to backpack.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Something went wrong while removing the copies to backpack."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backpack/getCopiesRFID": {
+      "get": {
+        "tags": [
+          "backpack"
+        ],
+        "summary": "Get all the RFIDs in the backpack of a user",
+        "description": "Get all the RFIDs of a user that are inserted in the backpack",
+        "requestBody": {
+          "description": "Get all the RFIDs in the backpack of a user",
+          "content": {
+            "application/protobuf.multipleRFID": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/protobuf.multipleRFID": {
+                "schema": {
+                  "$ref": "#/components/schemas/multipleRFID"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "RFID": "string[]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "You need to specify the email.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "You need to specify the email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backpack/getCopiesISBN": {
+      "get": {
+        "tags": [
+          "backpack"
+        ],
+        "summary": "Get all the ISBNs in the backpack of a user",
+        "description": "Get all the ISBNs of a user that are inserted in the backpack",
+        "requestBody": {
+          "description": "Get all the ISBNs in the backpack of a user",
+          "content": {
+            "application/protobuf.multipleRFID": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicMessage"
+              },
+              "examples": {
+                "messageReturn": {
+                  "summary": "Input data",
+                  "value": {
+                    "message": "email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/protobuf.multipleRFID": {
+                "schema": {
+                  "$ref": "#/components/schemas/multipleRFID"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "RFID": "string[]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "You need to specify the email.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "You need to specify the email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BookActions_WithPermission": {
+        "type": "object",
+        "properties": {
+          "email_esecutore": {
+            "type": "string"
+          },
+          "Libro": {
+            "type": "object"
+          }
+        }
+      },
+      "BasicMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "message2": {
+            "type": "string"
+          }
+        }
+      },
+      "BuyBook": {
+        "type": "object",
+        "properties": {
+          "ISBN": {
+            "type": "string"
+          },
+          "RFID": {
+            "type": "string"
+          },
+          "emailCompratore": {
+            "type": "string"
+          }
+        }
+      },
+      "Book": {
+        "type": "object",
+        "properties": {
+          "ISBN": {
+            "type": "string"
+          },
+          "Titolo": {
+            "type": "string"
+          },
+          "Autore": {
+            "type": "string"
+          },
+          "Data_Pubblicazione": {
+            "type": "object"
+          }
+        }
+      },
+      "multipleRFID": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "RFID": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
