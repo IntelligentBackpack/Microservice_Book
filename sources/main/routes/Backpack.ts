@@ -47,7 +47,7 @@ router.delete('/removeCopies', async (req: {body: proto.multipleRFID}, res) => {
 
     for(const RFID of req.body.RFID) {
         if(!await queryAsk.removeCopyfromBackpack(RFID)) {
-            res.status(500).send(new proto.BasicMessage({message: "Something went wrong while adding the copy to backpack."}).toObject())
+            res.status(500).send(new proto.BasicMessage({message: "Something went wrong while removing a copy to backpack."}).toObject())
             return;
         }
     }

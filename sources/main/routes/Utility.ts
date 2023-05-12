@@ -25,5 +25,5 @@ router.post('/changeEmail', async (req: {body: proto.BasicMessage}, res) => {
         res.status(200).send(new proto.BasicMessage({message: "Email changed successfully."}).toObject())
         return;
     }
-    res.status(500).send(new proto.BasicMessage({message: "Cannot add book."}).toObject())
+    res.status(500).send(new proto.BasicMessage({message: "Cannot change the email."}).toObject())
 });

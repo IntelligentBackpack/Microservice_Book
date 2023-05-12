@@ -142,7 +142,6 @@ describe("remove route functionality", function() {
 
         it("should give error for books associated with RFIDs",async () => {
             const serverResponse = await request(app).delete('/remove/book/Autore').send(new proto.BasicMessage({message: "admin", message2: "Test Autore"}).toObject());
-            console.log(serverResponse.body)
             expect(serverResponse.statusCode).toBe(400)
             expect(serverResponse.body.message).toBe("Cannot delete all books. 1+ books are associated with 1+ RFIDs.")
         })
@@ -187,17 +186,21 @@ describe("remove route functionality", function() {
 describe("testing utility functionality", function() {
     const myBook2 = new proto.Book({ISBN: randomISBN(), Titolo: "Test book 2", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 3845, Month: 12, Day: 5})})
     const myRFID: string[] = ["yesIm_A_ValidRFID123", "yesIm_A_newValidRFID"]
-    
-    it("create 2 books, 2 RFID and 1 library",async () => {
-        await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook}).toObject());
-        await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook2}).toObject());
-        
-        await request(app).put('/create/library').send(myLibrary.toObject())
-
-        await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook.ISBN, RFID: "yesIm_A_ValidRFID123", emailCompratore: "admin"}).toObject()));
-        await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook2.ISBN, RFID: "yesIm_A_newValidRFID", emailCompratore: "admin"}).toObject()));
-    
-        expect(1).toBe(1)
+    describe("recreate data for more testing", function() {
+        it("create 2 books",async () => {
+            await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook}).toObject());
+            await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook2}).toObject());
+            expect(1).toBe(1)
+        })
+        it("1 library",async () => {
+            await request(app).put('/create/library').send(myLibrary.toObject())
+            expect(1).toBe(1)
+        })
+        it("2 RFID",async () => {
+            await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook.ISBN, RFID: "yesIm_A_ValidRFID123", emailCompratore: "admin"}).toObject()));
+            await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook2.ISBN, RFID: "yesIm_A_newValidRFID", emailCompratore: "admin"}).toObject()));
+            expect(1).toBe(1)
+        })
     })
 
     describe("testing getBook", function() {
@@ -277,12 +280,21 @@ describe("testing utility functionality", function() {
         })
     })
 
-    it("Clean the data created",async () => {
-        await request(app).delete('/remove/RFID/all').send(new proto.BasicMessage({message: "admin"}).toObject());
-        await request(app).delete('/remove/book/Autore').send(new proto.BasicMessage({message: "admin", message2: "Test Autore"}).toObject());
-        await request(app).delete('/remove/libreria').send(new proto.BasicMessage({message: "admin"}).toObject());
-        expect(1).toBe(1)
+    describe("clean the data created", function() {
+        it("Remove all RFID of user",async () => {
+            await request(app).delete('/remove/RFID/all').send(new proto.BasicMessage({message: "admin"}).toObject());
+            expect(1).toBe(1)
+        })
+        it("Remove the book",async () => {
+            await request(app).delete('/remove/book/Autore').send(new proto.BasicMessage({message: "admin", message2: "Test Autore"}).toObject());
+            expect(1).toBe(1)
+        })
+        it("Remove the library",async () => {
+            await request(app).delete('/remove/libreria').send(new proto.BasicMessage({message: "admin"}).toObject());
+            expect(1).toBe(1)
+        })
     })
+
 })
 
 
