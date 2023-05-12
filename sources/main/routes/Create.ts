@@ -19,18 +19,15 @@ router.put('/book', async (req: {body: proto.BookActions_WithPermission}, res) =
         res.status(401).send(new proto.BasicMessage({message: "No privileges for adding a book."}).toObject())
         return;
     }
-    console.log("1")
     const alreadyFound = await queryAsk.getBookInfo(req.body.Libro.ISBN)
     if(alreadyFound.Titolo != "") {
         res.status(400).send(new proto.BasicMessage({message: "Book already exists."}).toObject())
         return;
     }
-    console.log("2")
     if(req.body.Libro.ISBN.length != 17) {
         res.status(400).send(new proto.BasicMessage({message: "ISBN have to be 17 characters long."}).toObject())
         return;
     }
-    console.log("3")
     if(await queryAsk.addBook(req.body.Libro)) {
         res.status(200).send(new proto.BasicMessage({message: "Booked added successfully."}).toObject())
         return;
@@ -45,13 +42,11 @@ router.put('/library', async (req: {body: proto.BasicMessage}, res) => {
         res.status(401).send(new proto.BasicMessage({message: "There are no email existing as the one you specified."}).toObject())
         return;
     }
-    console.log("4")
     const libraryFound = await queryAsk.getLibreriaByEmail(req.body.message)
     if(Library.isAssigned(libraryFound)) {
         res.status(400).send(new proto.BasicMessage({message: "There is already a library associated to that email."}).toObject())
         return;
     }
-    console.log("5")
     if(await queryAsk.registerLibrary(req.body.message)) {
         res.status(200).send(new proto.BasicMessage({message: "Libreria created successfully."}).toObject())
         return;

@@ -44,7 +44,7 @@ describe("create route functionality", function() {
             expect(serverResponse.body.message).toBe("There is already a library associated to that email.")
         })
 
-        it("should give error 401 for no email found on cretion library", async() => {
+        it("should give error 401 for no email found on creation library", async() => {
             const serverResponse = await request(app).put('/create/library').send(new proto.BasicMessage({message: randomISBN()}));
             expect(serverResponse.statusCode).toBe(401)
             expect(serverResponse.body.message).toBe("There are no email existing as the one you specified.")
