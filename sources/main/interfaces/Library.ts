@@ -22,10 +22,6 @@ export function assignVals_JSON(json: any): Library {
     return library;
 }
 
-export function generate_protoLibrary(json: Library): proto.Library {
-    return new proto.Library({ID: json.ID, Email_Proprietario: json.Email_Proprietario})
-}
-
 export function verify_Basic_DataPresence(json: any): boolean {    
     return (json.ID && json.RFID)
 }
