@@ -15,7 +15,7 @@ const AccessMicroserviceURL:string = "https://accessmicroservice.azurewebsites.n
 
 router.delete('/libreria', async (req: {body: proto.BasicMessage}, res) => {
     const libreriaFound = await queryAsk.getCopyByEmail(req.body.message)
-    if(Copy.isAssigned(libreriaFound)) {
+    if(libreriaFound.length > 0) {
         res.status(400).send(new proto.BasicMessage({message: "There are some books still assigned to this library. Remove them before."}).toObject())
         return;
     }

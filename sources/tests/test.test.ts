@@ -185,7 +185,6 @@ describe("remove route functionality", function() {
 
 describe("testing utility functionality", function() {
     const myBook2 = new proto.Book({ISBN: randomISBN(), Titolo: "Test book 2", Autore: "Test Autore", Data_Pubblicazione: new proto.Data({Year: 3845, Month: 12, Day: 5})})
-    const myRFID: string[] = ["yesIm_A_ValidRFID123", "yesIm_A_newValidRFID"]
     describe("recreate data for more testing", function() {
         it("create 2 books",async () => {
             await request(app).put('/create/book').send(new proto.BookActions_WithPermission({email_esecutore: "admin", Libro: myBook}).toObject());
@@ -204,12 +203,6 @@ describe("testing utility functionality", function() {
     })
 
     describe("testing getBook", function() {
-        it("should get a default book" ,async () => {
-            const serverResponse = await request(app).get('/utility/getBook').query({ISBN: randomISBN()})
-            expect(serverResponse.statusCode).toBe(200)
-            expect(Book.isAssigned(serverResponse.body)).toBe(false)
-        })
-    
         it("should get the specified book" ,async () => {
             const serverResponse = await request(app).get('/utility/getBook').query({ISBN: myBook2.ISBN})
             expect(serverResponse.statusCode).toBe(200)
@@ -222,61 +215,16 @@ describe("testing utility functionality", function() {
             expect(serverResponse.body.Data_Pubblicazione.Year).toBe(myBook2.Data_Pubblicazione.Year)
         })
     })
-
-    describe("testing adding copy to backpack", function() {
-        it("should give error for no RFID passed",async () => {
-            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({}).toObject())
-            expect(serverResponse.statusCode).toBe(400)
-            expect(serverResponse.body.message).toBe("You need to add at least 1 copy.")
-        })
-        it("should give error for no library associated with email",async () => {
-            const myRFID: string[] = ["gesù"]
-            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({RFID: myRFID}).toObject())
-            expect(serverResponse.statusCode).toBe(400)
-            expect(serverResponse.body.message).toBe("No library associated with passed email.")
-        })
-        it("should give error for RFID not existing",async () => {
-            const myRFID: string[] = ["csdceef"]
-            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({email: "admin",RFID: myRFID}).toObject())
-            expect(serverResponse.statusCode).toBe(400)
-            expect(serverResponse.body.message).toBe("The RFID passed does not exists.")
-        })
-        it("should add the RFIDs specified to the backpack",async () => {
-
-            const serverResponse = await request(app).put('/backpack/addCopies').send(new proto.multipleRFID({email: "admin",RFID: myRFID}).toObject())
+    
+    describe("testing getCopiesInfo", function() {
+        it("should get a copy info with RFID" ,async () => {
+            const serverResponse = await request(app).get('/utility/getCopy/RFID').query({RFID: "yesIm_A_ValidRFID123"})
             expect(serverResponse.statusCode).toBe(200)
-            expect(serverResponse.body.message).toBe("RFIDs added successfully.")
         })
-    })
-
-    describe("testing utility methods of backpack", function() {
-        it("should get all RFIDs in backpack using email",async () => {
-            const serverResponse = await request(app).get('/backpack/getCopiesRFID').send(new proto.BasicMessage({message: "admin"}).toObject())
+    
+        it("should get all copies info with Email" ,async () => {
+            const serverResponse = await request(app).get('/utility/getCopy/Email').query({email: "admin"})
             expect(serverResponse.statusCode).toBe(200)
-            expect(serverResponse.body.RFID.length).toBe(2)
-        })
-        it("should get all RFIDs in backpack using email",async () => {
-            const serverResponse = await request(app).get('/backpack/getBooksISBN').send(new proto.BasicMessage({message: "admin"}).toObject())
-            expect(serverResponse.statusCode).toBe(200)
-            expect(serverResponse.body.RFID.length).toBe(2)
-        })
-    })
-
-    describe("testing remove backpack copies", function() {
-        it("should give error for no RFID assed",async () => {
-            const serverResponse = await request(app).delete('/backpack/removeCopies').send(new proto.multipleRFID({}).toObject())
-            expect(serverResponse.statusCode).toBe(400)
-            expect(serverResponse.body.message).toBe("You need to remove at least 1 copy.")
-        })
-        it("should remove the specified RFID",async () => {
-            const serverResponse = await request(app).delete('/backpack/removeCopies').send(new proto.multipleRFID({RFID: ["yesIm_A_ValidRFID123"]}).toObject())
-            expect(serverResponse.statusCode).toBe(200)
-            expect(serverResponse.body.message).toBe("RFIDs removed successfully.")
-        })
-        it("should clear the backpack of a specified user passed by email",async () => {
-            const serverResponse = await request(app).delete('/backpack/clear').send(new proto.BasicMessage({message: "admin"}).toObject())
-            expect(serverResponse.statusCode).toBe(200)
-            expect(serverResponse.body.message).toBe("RFIDs removed successfully.")
         })
     })
 

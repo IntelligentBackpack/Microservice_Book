@@ -2,6 +2,7 @@ import * as protoGen from '../generated/book';
 import proto = protoGen.book;
 import * as Data from './Data';
 import { json } from 'body-parser';
+import { Library } from './Library';
 
 export interface Copy {
     RFID: string;
@@ -24,6 +25,14 @@ export function assignVals_JSON(json: any): Copy {
 
 export function generate_protoCopy(json: Copy): proto.Copy {
     return new proto.Copy({RFID: json.RFID, ISBN: json.ISBN, ID_Libreria: json.ID_Libreria, Email_Proprietario: json.Email_Proprietario})
+}
+
+export function generate_protoLibrary(copies: Copy[]): proto.Library {
+    var copiesGen: proto.Copy[] = []
+    copies.forEach(function(copy: Copy) {
+        copiesGen.push(generate_protoCopy(copy))
+    });
+    return new proto.Library({copies: copiesGen})
 }
 
 export function verify_Basic_DataPresence(json: any): boolean {    
