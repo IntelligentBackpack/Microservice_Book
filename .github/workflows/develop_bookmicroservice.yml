@@ -67,7 +67,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'BookMicroservice'
+          app-name: 'BooksMicroservice'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A89EB2FF83BE4DFEAE98512EF707E660 }}
           package: .
