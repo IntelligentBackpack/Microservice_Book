@@ -4,7 +4,6 @@ const router = Router();
 export default router;
 
 import * as protoGen from '../generated/book'
-import * as Library from '../interfaces/Library';
 import * as Book from '../interfaces/Book'
 import * as Copy from '../interfaces/Copy'
 
