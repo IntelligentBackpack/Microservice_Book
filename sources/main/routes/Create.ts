@@ -68,8 +68,8 @@ router.put('/buyBook', async (req: {body: proto.BuyBook}, res) => {
         return;
     }
 
-    if(req.body.RFID.length != 20) {
-        res.status(400).send(new proto.BasicMessage({message: "RFID have to have a length of 20."}).toObject())
+    if(req.body.RFID.length > 40) {
+        res.status(400).send(new proto.BasicMessage({message: "RFID have to be max 40 chars long."}).toObject())
         return;
     }
 

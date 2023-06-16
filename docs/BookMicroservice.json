@@ -3,7 +3,7 @@
   "info": {
     "title": "Book microservice",
     "description": "This microservice is used to access informations about books. In particular, this microservice expose API with functionality that let you add new books, add a personal library and let you register RFIDs associated to a defined book.",
-    "version": "1.0.0"
+    "version": "2.0.2"
   },
   "externalDocs": {
     "description": "GitHub page",
@@ -26,10 +26,6 @@
     {
       "name": "remove",
       "description": "Let you delete data"
-    },
-    {
-      "name": "backpack",
-      "description": "Let you handle all the informations inside your backpack"
     }
   ],
   "paths": {
@@ -295,7 +291,7 @@
             }
           },
           "400": {
-            "description": "There isn't any book associated with the specified ISBN. <br>There isn't any library associated with the specified email. <br>RFID have to have a length of 20. <br>RFID already exists.",
+            "description": "There isn't any book associated with the specified ISBN. <br>There isn't any library associated with the specified email. <br>RFID have to be max 40 chars long. <br>RFID already exists.",
             "content": {
               "application/protobuf.BasicMessage": {
                 "schema": {
@@ -407,6 +403,125 @@
                     "summary": "Return data",
                     "value": {
                       "message": "Require ISBN value."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/utility/getCopy/RFID": {
+      "get": {
+        "tags": [
+          "utility"
+        ],
+        "summary": "Get the informations of a copy",
+        "description": "Get the informations of a specified copy passed by RFID",
+        "parameters": [
+          {
+            "name": "RFID",
+            "in": "query",
+            "description": "RFID of the copy you are looking for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got the informations from the database.",
+            "content": {
+              "application/protobuf.Copy": {
+                "schema": {
+                  "$ref": "#/components/schemas/Copy"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "ISBN": "string",
+                      "RFID": "string",
+                      "ID_Libreria": "integer",
+                      "Email_Proprietario": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Require RFID value.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Require RFID value."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/utility/getCopy/Email": {
+      "get": {
+        "tags": [
+          "utility"
+        ],
+        "summary": "Get the informations of all copies of an user passed by email",
+        "description": "Get all the informations of copies owned by an user",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got the informations from the database.",
+            "content": {
+              "application/protobuf.Library": {
+                "schema": {
+                  "$ref": "#/components/schemas/Library"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "copies": "Copy[]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Require email value.",
+            "content": {
+              "application/protobuf.BasicMessage": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicMessage"
+                },
+                "examples": {
+                  "messageReturn": {
+                    "summary": "Return data",
+                    "value": {
+                      "message": "Require email value."
                     }
                   }
                 }
@@ -911,422 +1026,6 @@
           }
         }
       }
-    },
-    "/backpack/addCopies": {
-      "put": {
-        "tags": [
-          "backpack"
-        ],
-        "summary": "Add 1+ copies to the backpack inventory",
-        "description": "Add 1+ copies passed to the inventory of the backpack",
-        "requestBody": {
-          "description": "Add 1+ copies to the backpack inventory",
-          "content": {
-            "application/protobuf.multipleRFID": {
-              "schema": {
-                "$ref": "#/components/schemas/multipleRFID"
-              },
-              "examples": {
-                "messageReturn": {
-                  "summary": "Input data",
-                  "value": {
-                    "message?": "email",
-                    "RFID": "string[]"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "RFIDs added successfully.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "RFIDs added successfully."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "You need to add at least 1 copy <br> No library associated with passed email <br> The RFID passed does not exists.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "No data passed",
-                    "value": {
-                      "message": "You need to add at least 1 copy"
-                    }
-                  },
-                  "messageReturn2": {
-                    "summary": "No library",
-                    "value": {
-                      "message": "No library associated with passed email"
-                    }
-                  },
-                  "messageReturn3": {
-                    "summary": "Invalid RFID",
-                    "value": {
-                      "message": "The RFID passed does not exists."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Something went wrong while adding the copy to backpack.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Something went wrong while adding the copy to backpack."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/backpack/removeCopies": {
-      "delete": {
-        "tags": [
-          "backpack"
-        ],
-        "summary": "Remove 1+ copies to the backpack inventory",
-        "description": "Remove 1+ copies passed to the inventory of the backpack",
-        "requestBody": {
-          "description": "Remove 1+ copies to the backpack inventory",
-          "content": {
-            "application/protobuf.multipleRFID": {
-              "schema": {
-                "$ref": "#/components/schemas/multipleRFID"
-              },
-              "examples": {
-                "messageReturn": {
-                  "summary": "Input data",
-                  "value": {
-                    "message?": "email",
-                    "RFID": "string[]"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "RFIDs removed successfully.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "RFIDs removed successfully."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "You need to remove at least 1 copy.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "You need to remove at least 1 copy."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Something went wrong while removing a copy to backpack.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Something went wrong while removing a copy to backpack."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/backpack/clear": {
-      "delete": {
-        "tags": [
-          "backpack"
-        ],
-        "summary": "Clear the backpack inventory",
-        "description": "Clear the backpack inventory of a given user, passed by email",
-        "requestBody": {
-          "description": "Clear the inventory of a user",
-          "content": {
-            "application/protobuf.BasicMessage": {
-              "schema": {
-                "$ref": "#/components/schemas/BasicMessage"
-              },
-              "examples": {
-                "messageReturn": {
-                  "summary": "Input data",
-                  "value": {
-                    "message": "email"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "RFIDs removed successfully.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "RFIDs removed successfully."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Something went wrong while removing the copies to backpack.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Something went wrong while removing the copies to backpack."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/backpack/getCopiesRFID": {
-      "get": {
-        "tags": [
-          "backpack"
-        ],
-        "summary": "Get all the RFIDs in the backpack of a user",
-        "description": "Get all the RFIDs of a user that are inserted in the backpack",
-        "requestBody": {
-          "description": "Get all the RFIDs in the backpack of a user",
-          "content": {
-            "application/protobuf.multipleRFID": {
-              "schema": {
-                "$ref": "#/components/schemas/BasicMessage"
-              },
-              "examples": {
-                "messageReturn": {
-                  "summary": "Input data",
-                  "value": {
-                    "message": "email"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/protobuf.multipleRFID": {
-                "schema": {
-                  "$ref": "#/components/schemas/multipleRFID"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "RFID": "string[]"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "You need to specify the email.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "You need to specify the email."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Internal server error."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/backpack/getCopiesISBN": {
-      "get": {
-        "tags": [
-          "backpack"
-        ],
-        "summary": "Get all the ISBNs in the backpack of a user",
-        "description": "Get all the ISBNs of a user that are inserted in the backpack",
-        "requestBody": {
-          "description": "Get all the ISBNs in the backpack of a user",
-          "content": {
-            "application/protobuf.multipleRFID": {
-              "schema": {
-                "$ref": "#/components/schemas/BasicMessage"
-              },
-              "examples": {
-                "messageReturn": {
-                  "summary": "Input data",
-                  "value": {
-                    "message": "email"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/protobuf.multipleRFID": {
-                "schema": {
-                  "$ref": "#/components/schemas/multipleRFID"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "RFID": "string[]"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "You need to specify the email.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "You need to specify the email."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Internal server error."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1391,6 +1090,31 @@
             "type": "string"
           },
           "RFID": {
+            "type": "object"
+          }
+        }
+      },
+      "Copy": {
+        "type": "object",
+        "properties": {
+          "ISBN": {
+            "type": "string"
+          },
+          "RFID": {
+            "type": "string"
+          },
+          "ID_Libreria": {
+            "type": "number"
+          },
+          "Email_Proprietario": {
+            "type": "string"
+          }
+        }
+      },
+      "Library": {
+        "type": "object",
+        "properties": {
+          "copies": {
             "type": "object"
           }
         }
