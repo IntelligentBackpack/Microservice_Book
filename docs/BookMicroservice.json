@@ -3,7 +3,7 @@
   "info": {
     "title": "Book microservice",
     "description": "This microservice is used to access informations about books. In particular, this microservice expose API with functionality that let you add new books, add a personal library and let you register RFIDs associated to a defined book.",
-    "version": "2.0.0"
+    "version": "2.0.2"
   },
   "externalDocs": {
     "description": "GitHub page",
@@ -291,7 +291,7 @@
             }
           },
           "400": {
-            "description": "There isn't any book associated with the specified ISBN. <br>There isn't any library associated with the specified email. <br>RFID have to have a length of 20. <br>RFID already exists.",
+            "description": "There isn't any book associated with the specified ISBN. <br>There isn't any library associated with the specified email. <br>RFID have to be max 40 chars long. <br>RFID already exists.",
             "content": {
               "application/protobuf.BasicMessage": {
                 "schema": {
