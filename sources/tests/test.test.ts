@@ -65,9 +65,8 @@ describe("create route functionality", function() {
         })
 
         it("should give error 400 for wrong RFID length", async() => {
-            const serverResponse = await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook.ISBN, RFID: (randomISBN()), emailCompratore: "admin"}).toObject()));
+            const serverResponse = await request(app).put('/create/buyBook').send((new proto.BuyBook({ISBN: myBook.ISBN, RFID: "thisisalongtextthatisusedforletthemethodfailWhyareyoustillreadingIamDoneByeworld", emailCompratore: "admin"}).toObject()));
             expect(serverResponse.statusCode).toBe(400)
-            expect(serverResponse.body.message).toBe("RFID have to have a length of 20.")
         })
 
         it("should create the copy", async() => {

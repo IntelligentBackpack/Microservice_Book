@@ -3,7 +3,7 @@
   "info": {
     "title": "Book microservice",
     "description": "This microservice is used to access informations about books. In particular, this microservice expose API with functionality that let you add new books, add a personal library and let you register RFIDs associated to a defined book.",
-    "version": "2.0.2"
+    "version": "2.0.3"
   },
   "externalDocs": {
     "description": "GitHub page",
@@ -78,24 +78,6 @@
                     "summary": "Return data",
                     "value": {
                       "message": "Booked added successfully."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Book already exists <br>ISBN have to be 17 characters long.",
-            "content": {
-              "application/protobuf.BasicMessage": {
-                "schema": {
-                  "$ref": "#/components/schemas/BasicMessage"
-                },
-                "examples": {
-                  "messageReturn": {
-                    "summary": "Return data",
-                    "value": {
-                      "message": "Book already exists"
                     }
                   }
                 }
