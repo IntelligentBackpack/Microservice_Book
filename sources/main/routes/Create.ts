@@ -24,10 +24,7 @@ router.put('/book', async (req: {body: proto.BookActions_WithPermission}, res) =
         res.status(400).send(new proto.BasicMessage({message: "Book already exists."}).toObject())
         return;
     }
-    if(req.body.Libro.ISBN.length != 17) {
-        res.status(400).send(new proto.BasicMessage({message: "ISBN have to be 17 characters long."}).toObject())
-        return;
-    }
+
     if(await queryAsk.addBook(req.body.Libro)) {
         res.status(200).send(new proto.BasicMessage({message: "Booked added successfully."}).toObject())
         return;
